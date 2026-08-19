@@ -1,0 +1,10 @@
+POST http://localhost:8080/api/records HTTP/1.1
+Content-Type: application/json
+
+{
+    "record_date": "2026-08-18",
+    "record_title": "test title",
+    "record_type": "book"
+}
+
+###
