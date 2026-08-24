@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +22,11 @@ type apiConfig struct {
 	secret         string
 	api_key        string
 }
+
+// This directive embeds the contents of the Vue dist folder into the variable
+//
+//go:embed frontend/dist/*
+var frontendAssets embed.FS
 
 func main() {
 	godotenv.Load()
@@ -43,11 +50,19 @@ func main() {
 		api_key:        apiKey,
 	}
 
+	publicFS, err := fs.Sub(frontendAssets, "frontend/dist")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	frontendHandler := http.FileServer(http.FS(publicFS))
+
 	fileServerHandler := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
 	wrappedHandler := cfg.middlewareMetricsInc(fileServerHandler)
 
 	mux := http.NewServeMux()
 	mux.Handle("/app/", wrappedHandler)
+	mux.Handle("/", frontendHandler)
 	mux.HandleFunc("GET /api/healthz", readinessHandler)
 	mux.HandleFunc("GET /admin/metrics", cfg.metricsHandler)
 	mux.HandleFunc("POST /api/records", cfg.addRecordHandler)
