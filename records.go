@@ -24,6 +24,11 @@ func (cfg *apiConfig) addRecordHandler(w http.ResponseWriter, r *http.Request) {
 		Record_Type  string    `json:"record_type"`
 	}
 
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	err := decoder.Decode(&params)

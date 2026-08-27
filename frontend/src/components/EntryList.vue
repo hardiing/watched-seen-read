@@ -8,8 +8,10 @@ const emits = defineEmits(['removeEntry'])
 
 <template>
     <TransitionGroup name="list" tag="div" class="task-list">
-        <article v-for="entry in entries" class="entry" :key="entry.id">
-            {{ entry.title }}
+        <article v-for="entry in entries" class="entry" :key="entry.entryTitle">
+            {{ entry.entryDate }}
+            {{ entry.entryTitle }}
+            {{ entry.entryType }}
             <button @click="emits('removeEntry', entry.id)" class="outline">Remove</button>
         </article>
     </TransitionGroup>

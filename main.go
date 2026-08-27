@@ -67,8 +67,10 @@ func main() {
 	mux.HandleFunc("GET /admin/metrics", cfg.metricsHandler)
 	mux.HandleFunc("POST /api/records", cfg.addRecordHandler)
 
+	corsHandler := enableCORS(mux)
+
 	srv := &http.Server{
-		Handler: mux,
+		Handler: corsHandler,
 		Addr:    ":" + port,
 	}
 	log.Printf("Serving files from %s on port %s\n", filepathRoot, port)
@@ -89,6 +91,21 @@ func (cfg *apiConfig) metricsHandler(w http.ResponseWriter, r *http.Request) {
 func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cfg.fileserverHits.Add(1)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
