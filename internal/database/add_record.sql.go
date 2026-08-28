@@ -40,6 +40,41 @@ func (q *Queries) CreateRecord(ctx context.Context, arg CreateRecordParams) (Rec
 	return i, err
 }
 
+const getAllRecords = `-- name: GetAllRecords :many
+SELECT id, record_date, record_title, record_type, updated_at
+FROM records_2026
+ORDER BY record_date ASC
+`
+
+func (q *Queries) GetAllRecords(ctx context.Context) ([]Records2026, error) {
+	rows, err := q.db.QueryContext(ctx, getAllRecords)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Records2026
+	for rows.Next() {
+		var i Records2026
+		if err := rows.Scan(
+			&i.ID,
+			&i.RecordDate,
+			&i.RecordTitle,
+			&i.RecordType,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const resetRecords = `-- name: ResetRecords :exec
 DELETE FROM records_2026
 `

@@ -35,12 +35,12 @@ function addEntry(data: Entry) {
   });
 }
 
-/* function removeEntry(id: string) {
+function removeEntry(id: number) {
   const index = entries.value.findIndex((entry) => entry.id === id);
   if (index !== -1) {
     entries.value.splice(index, 1);
   }
-} */
+}
 
 function setFilter(value: string) {
   filter.value = value;
@@ -60,7 +60,7 @@ function setFilter(value: string) {
       <FilterButton :currentFilter="filter" filter="movies" @set-filter="setFilter" />
       <FilterButton :currentFilter="filter" filter="events" @set-filter="setFilter" />
     </div>
-    <!-- <EntryList :entries @remove-entry="removeEntry" /> -->
+    <EntryList :entries @remove-entry="removeEntry" />
   </main>
 </template>
 

@@ -34,7 +34,7 @@ func (cfg *apiConfig) addRecordHandler(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&params)
 	if err != nil {
 		msg := fmt.Sprintf("Error decoding parameters: %s", err)
-		respondWithError(w, 500, msg)
+		respondWithError(w, 400, msg)
 		return
 	}
 
@@ -75,4 +75,104 @@ func (cfg *apiConfig) addRecordHandler(w http.ResponseWriter, r *http.Request) {
 		Record_Title: record.RecordTitle,
 		Record_Type:  record.RecordType,
 	})
+}
+
+func (cfg *apiConfig) getRecordsHandler(w http.ResponseWriter, r *http.Request) {
+	type Record struct {
+		ID           int32  `json:"id"`
+		Record_Date  string `json:"record_date"`
+		Record_Title string `json:"record_title"`
+		Record_Type  string `json:"record_type"`
+	}
+
+	var allRecords []Record
+
+	//query := r.URL.Query()
+	//date := query.Get("record_date")
+	//sortType := query.Get("sort")
+
+	records, err := cfg.db.GetAllRecords(r.Context())
+	if err != nil {
+		msg := fmt.Sprintf("Error getting records: %s", err)
+		respondWithError(w, 500, msg)
+		return
+	}
+
+	for _, record := range records {
+		convertRecord := Record{
+			ID:           record.ID,
+			Record_Date:  record.RecordDate.Format("2006-01-02"),
+			Record_Title: record.RecordTitle,
+			Record_Type:  record.RecordType,
+		}
+		allRecords = append(allRecords, convertRecord)
+	}
+
+	/* if sortType == "desc" {
+		sort.Slice(allRecords, func(i, j int) bool {
+			return allRecords[i].Record_Date.After(allRecords[j].CreatedAt)
+		})
+	} else {
+		sort.Slice(allChirps, func(i, j int) bool {
+			return allChirps[i].CreatedAt.Before(allChirps[j].CreatedAt)
+		})
+	} */
+
+	respondWithJSON(w, 200, allRecords)
+
+	/* if authorID != "" {
+		parsedUUID, err := uuid.Parse(authorID)
+		if err != nil {
+			msg := fmt.Sprintf("Error parsing UUID: %s", err)
+			respondWithError(w, 400, msg)
+			return
+		}
+		chirps, err := cfg.db.GetChirpsByAuthorID(r.Context(), parsedUUID)
+		if err != nil {
+			msg := fmt.Sprintf("Error getting all chirps for author: %s", err)
+			respondWithError(w, 500, msg)
+			return
+		}
+
+		for _, chirp := range chirps {
+			convertChirp := Chirp{
+				ID:        chirp.ID,
+				CreatedAt: chirp.CreatedAt,
+				UpdatedAt: chirp.UpdatedAt,
+				Body:      chirp.Body,
+				User_ID:   chirp.UserID,
+			}
+			allChirps = append(allChirps, convertChirp)
+		}
+	} else {
+		chirps, err := cfg.db.GetAllChirps(r.Context())
+		if err != nil {
+			msg := fmt.Sprintf("Error getting all chirps: %s", err)
+			respondWithError(w, 500, msg)
+			return
+		}
+
+		for _, chirp := range chirps {
+			convertChirp := Chirp{
+				ID:        chirp.ID,
+				CreatedAt: chirp.CreatedAt,
+				UpdatedAt: chirp.UpdatedAt,
+				Body:      chirp.Body,
+				User_ID:   chirp.UserID,
+			}
+			allChirps = append(allChirps, convertChirp)
+		}
+	}
+
+	if sortType == "desc" {
+		sort.Slice(allChirps, func(i, j int) bool {
+			return allChirps[i].CreatedAt.After(allChirps[j].CreatedAt)
+		})
+	} else {
+		sort.Slice(allChirps, func(i, j int) bool {
+			return allChirps[i].CreatedAt.Before(allChirps[j].CreatedAt)
+		})
+	}
+
+	respondWithJSON(w, 200, allChirps) */
 }

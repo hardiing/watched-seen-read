@@ -9,3 +9,7 @@ VALUES ($1, $2, $3, NOW())
 RETURNING *;
 -- name: ResetRecords :exec
 DELETE FROM records_2026;
+-- name: GetAllRecords :many
+SELECT *
+FROM records_2026
+ORDER BY record_date ASC;

@@ -4,8 +4,19 @@ import axios from 'axios';
 
 const emit = defineEmits(['formSubmitted', 'addEntry']);
 
+type DBRecord = {
+    id: number
+    record_date: string
+    record_title: string
+    record_type: string
+}
+
+const records = ref<DBRecord[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
+
 const newEntry = ref("");
-const error = ref("");
+//const error = ref("");
 const Entry = reactive({
     entryDate: '',
     entryTitle: '',
@@ -40,6 +51,17 @@ const formSubmitted = async () => {
     console.log("data:", error.response?.data)
     console.log("error:", error)
     //message.value = 'Error saving data: ' + (error.response?.data || error.message)
+  }
+  try {
+    const response = await axios.get<DBRecord[]>(
+      'http://localhost:8080/api/records'
+    )
+    records.value = response.data
+  } catch (err) {
+    console.error(err)
+    error.value = 'Unable to load records.'
+  } finally {
+    loading.value = false
   }
 }
 </script>

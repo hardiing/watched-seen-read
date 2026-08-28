@@ -66,6 +66,7 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", readinessHandler)
 	mux.HandleFunc("GET /admin/metrics", cfg.metricsHandler)
 	mux.HandleFunc("POST /api/records", cfg.addRecordHandler)
+	mux.HandleFunc("GET /api/records", cfg.getRecordsHandler)
 
 	corsHandler := enableCORS(mux)
 
