@@ -1,68 +1,27 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
-import axios from 'axios';
+import { reactive } from 'vue';
+import type { NewEntry } from '../types';
 
-const emit = defineEmits(['formSubmitted', 'addEntry']);
+const emit = defineEmits<{
+  addEntry: [entry: NewEntry]
+}>()
 
-type DBRecord = {
-    id: number
-    record_date: string
-    record_title: string
-    record_type: string
-}
-
-const records = ref<DBRecord[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
-
-const newEntry = ref("");
-//const error = ref("");
-const Entry = reactive({
-    entryDate: '',
-    entryTitle: '',
-    entryType: ''
+const entry = reactive<NewEntry>({
+    record_date: '',
+    record_title: '',
+    record_type: ''
 })
-const submittedData = ref(Entry)
 
-//function formSubmitted() {
-    //submittedData.value = { ...Entry }
-    //emit("addEntry", { ...Entry })
-    /* if (newEntry.value.trim()) {
-        emit("addEntry", newEntry.value.trim());
-        newEntry.value = "";
-    } else {
-        error.value = "Entry cannot be empty!"
-    } */
-//}
+const formSubmitted = () => {
+  emit('addEntry', {
+    record_date: entry.record_date,
+    record_title: entry.record_title,
+    record_type: entry.record_type
+  })
 
-const formSubmitted = async () => {
-  try {
-    const response = await axios.post('http://localhost:8080/api/records', {
-      record_date: Entry.entryDate,
-      record_title: Entry.entryTitle,
-      record_type: Entry.entryType
-    })
-    //message.value = response.data.message
-    Entry.entryDate = ''
-    Entry.entryTitle = ''
-    Entry.entryType = ''
-  } catch (error: any) {
-    console.log("status:", error.response?.status)
-    console.log("data:", error.response?.data)
-    console.log("error:", error)
-    //message.value = 'Error saving data: ' + (error.response?.data || error.message)
-  }
-  try {
-    const response = await axios.get<DBRecord[]>(
-      'http://localhost:8080/api/records'
-    )
-    records.value = response.data
-  } catch (err) {
-    console.error(err)
-    error.value = 'Unable to load records.'
-  } finally {
-    loading.value = false
-  }
+  entry.record_date = ''
+  entry.record_title = ''
+  entry.record_type = ''
 }
 </script>
 
@@ -74,7 +33,7 @@ const formSubmitted = async () => {
         <input 
           type="text" 
           id="entryDate" 
-          v-model.trim="Entry.entryDate" 
+          v-model.trim="entry.record_date" 
           required 
         />
       </div>
@@ -85,7 +44,7 @@ const formSubmitted = async () => {
         <input 
           type="text" 
           id="entryTitle" 
-          v-model.trim="Entry.entryTitle" 
+          v-model.trim="entry.record_title" 
           required 
         />
       </div>
@@ -93,53 +52,17 @@ const formSubmitted = async () => {
       <!-- Select Dropdown -->
       <div class="form-group">
         <label for="entryType">Type:</label>
-        <select id="entryType" v-model="Entry.entryType">
+        <select id="entryType" v-model="entry.record_type">
           <option value="book">Book</option>
           <option value="movie">Movie</option>
           <option value="show">TV Show</option>
           <option value="other">Other</option>
         </select>
       </div>
-        <!-- <label>
-        Entry Date
-        <input 
-            v-model="newEntry"
-            name="newEntry"
-            :aria-invalid="!!error || undefined"
-            @input="error = ''"
-        >
-        <small v-if="error" id="invalid-helper">
-            {{ error }}
-        </small>
-        </label>
-        <label>
-        Entry Title
-        <input 
-            v-model="newEntry"
-            name="newEntry"
-            :aria-invalid="!!error || undefined"
-            @input="error = ''"
-        >
-        <small v-if="error" id="invalid-helper">
-            {{ error }}
-        </small>
-        </label>
-        <label>
-        Entry Type
-        <input 
-            v-model="newEntry"
-            name="newEntry"
-            :aria-invalid="!!error || undefined"
-            @input="error = ''"
-        >
-        <small v-if="error" id="invalid-helper">
-            {{ error }}
-        </small>
-        </label> -->
         <div class="button-container">
         <button>Add</button>
         </div>
     </form>
     <!-- Previewing Saved State -->
-    <pre v-if="submittedData">{{ submittedData }}</pre>
+    <!-- <pre v-if="submittedData">{{ submittedData }}</pre> -->
 </template>

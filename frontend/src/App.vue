@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
-import type { Entry } from './types';
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios'
+import type { Entry, NewEntry } from './types';
 import EntryForm from './components/EntryForm.vue';
 import EntryList from './components/EntryList.vue';
 import FilterButton from './components/FilterButton.vue';
@@ -8,43 +9,63 @@ import FilterButton from './components/FilterButton.vue';
 const message = ref("Watched Seen Read");
 const entries = ref<Entry[]>([]);
 const filter = ref("all");
-const entry = ref<Entry | null>(null);
-const handleFormSubmission = (data: Entry): void => {
-  entry.value = data
-};
 
-/* const filteredEntries = computed(() => {
-  switch(filter.value) {
-    case "all":
-      return entries.value;
-    case "books":
-      return entries.value.filter((entry) => entry.book);
-    case "movies":
-      return entries.value.filter((entry) => entry.movie);
-    case "events":
-      return entries.value.filter((entry) => entry.event);
+const fetchEntries = async () => {
+  try {
+    const response = await axios.get<Entry[]>(
+      'http://localhost:8080/api/records'
+    )
+
+    entries.value = response.data
+  } catch (error) {
+    console.error('Unable to load entries:', error)
   }
-  return entries.value;
-}) */
-
-function addEntry(data: Entry) {
-  entries.value.push({
-    date: data.date,
-    title: data.title,
-    type: data.type,
-  });
 }
 
-function removeEntry(id: number) {
+const addEntry = async (entry: NewEntry) => {
+  try {
+    await axios.post(
+      'http://localhost:8080/api/records',
+      entry
+    )
+
+    await fetchEntries()
+  } catch (error) {
+    console.error('Unable to add entry:', error)
+  }
+}
+
+function removeEntry(id: number) { // rework to delete from db
   const index = entries.value.findIndex((entry) => entry.id === id);
   if (index !== -1) {
     entries.value.splice(index, 1);
   }
 }
 
+const filteredEntries = computed(() => {
+  switch (filter.value) {
+    case 'books':
+      return entries.value.filter((entry) => entry.record_type === 'book')
+
+    case 'movies':
+      return entries.value.filter((entry) => entry.record_type === 'movie')
+
+    case 'shows':
+      return entries.value.filter((entry) => entry.record_type === 'show')
+
+    case 'other':
+      return entries.value.filter((entry) => entry.record_type === 'other')
+
+    default:
+      return entries.value
+  }
+})
+
 function setFilter(value: string) {
   filter.value = value;
 }
+
+onMounted(fetchEntries)
 </script>
 
 <template>
@@ -58,7 +79,8 @@ function setFilter(value: string) {
       <FilterButton  :currentFilter="filter" filter="all" @set-filter="setFilter" />
       <FilterButton :currentFilter="filter" filter="books" @set-filter="setFilter" />
       <FilterButton :currentFilter="filter" filter="movies" @set-filter="setFilter" />
-      <FilterButton :currentFilter="filter" filter="events" @set-filter="setFilter" />
+      <FilterButton :currentFilter="filter" filter="shows" @set-filter="setFilter" />
+      <FilterButton :currentFilter="filter" filter="other" @set-filter="setFilter" />
     </div>
     <EntryList :entries @remove-entry="removeEntry" />
   </main>
