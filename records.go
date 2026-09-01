@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	//"github.com/google/uuid"
@@ -175,4 +176,23 @@ func (cfg *apiConfig) getRecordsHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	respondWithJSON(w, 200, allChirps) */
+}
+
+func (cfg *apiConfig) deleteRecordHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.PathValue("recordID")
+	val64, err := strconv.ParseInt(path, 10, 32)
+	if err != nil {
+		msg := fmt.Sprintf("Error parsing path: %s", err)
+		respondWithError(w, 500, msg)
+		return
+	}
+	val32 := int32(val64)
+	err = cfg.db.DeleteRecord(r.Context(), val32)
+	if err != nil {
+		msg := fmt.Sprintf("Error deleting record: %s", err)
+		respondWithError(w, 500, msg)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

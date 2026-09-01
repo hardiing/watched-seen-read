@@ -13,3 +13,6 @@ DELETE FROM records_2026;
 SELECT *
 FROM records_2026
 ORDER BY record_date ASC;
+-- name: DeleteRecord :exec
+DELETE FROM records_2026
+WHERE id = $1;

@@ -35,12 +35,24 @@ const addEntry = async (entry: NewEntry) => {
   }
 }
 
-function removeEntry(id: number) { // rework to delete from db
+const removeEntry = async (id: number) => {
+  try {
+    await axios.delete(
+      'http://localhost:8080/api/records/' + id,
+    )
+
+    await fetchEntries()
+  } catch (error) {
+    console.error('Unable to delete entry:', error)
+  }
+}
+
+/* function removeEntry(id: number) { // rework to delete from db
   const index = entries.value.findIndex((entry) => entry.id === id);
   if (index !== -1) {
     entries.value.splice(index, 1);
   }
-}
+} */
 
 const filteredEntries = computed(() => {
   switch (filter.value) {

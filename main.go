@@ -67,6 +67,7 @@ func main() {
 	mux.HandleFunc("GET /admin/metrics", cfg.metricsHandler)
 	mux.HandleFunc("POST /api/records", cfg.addRecordHandler)
 	mux.HandleFunc("GET /api/records", cfg.getRecordsHandler)
+	mux.HandleFunc("DELETE /api/records/{recordID}", cfg.deleteRecordHandler)
 
 	corsHandler := enableCORS(mux)
 
