@@ -10,3 +10,5 @@ export type NewEntry = {
   record_title: string
   record_type: string
 }
+
+export type EntryFilter = "all" | "book" | "movie" | "show" | "other";

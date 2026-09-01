@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios'
-import type { Entry, NewEntry } from './types';
+import type { Entry, NewEntry, EntryFilter } from './types';
 import EntryForm from './components/EntryForm.vue';
 import EntryList from './components/EntryList.vue';
 import FilterButton from './components/FilterButton.vue';
 
 const message = ref("Watched Seen Read");
 const entries = ref<Entry[]>([]);
-const filter = ref("all");
+const filter = ref<EntryFilter>("all");
 
 const fetchEntries = async () => {
   try {
@@ -47,22 +47,15 @@ const removeEntry = async (id: number) => {
   }
 }
 
-/* function removeEntry(id: number) { // rework to delete from db
-  const index = entries.value.findIndex((entry) => entry.id === id);
-  if (index !== -1) {
-    entries.value.splice(index, 1);
-  }
-} */
-
 const filteredEntries = computed(() => {
   switch (filter.value) {
-    case 'books':
+    case 'book':
       return entries.value.filter((entry) => entry.record_type === 'book')
 
-    case 'movies':
+    case 'movie':
       return entries.value.filter((entry) => entry.record_type === 'movie')
 
-    case 'shows':
+    case 'show':
       return entries.value.filter((entry) => entry.record_type === 'show')
 
     case 'other':
@@ -73,7 +66,7 @@ const filteredEntries = computed(() => {
   }
 })
 
-function setFilter(value: string) {
+function setFilter(value: EntryFilter) {
   filter.value = value;
 }
 
@@ -89,12 +82,12 @@ onMounted(fetchEntries)
     <h3 v-else>{{ entries.length }} entries found</h3>
     <div v-if="entries.length" class="button-container">
       <FilterButton  :currentFilter="filter" filter="all" @set-filter="setFilter" />
-      <FilterButton :currentFilter="filter" filter="books" @set-filter="setFilter" />
-      <FilterButton :currentFilter="filter" filter="movies" @set-filter="setFilter" />
-      <FilterButton :currentFilter="filter" filter="shows" @set-filter="setFilter" />
+      <FilterButton :currentFilter="filter" filter="book" @set-filter="setFilter" />
+      <FilterButton :currentFilter="filter" filter="movie" @set-filter="setFilter" />
+      <FilterButton :currentFilter="filter" filter="show" @set-filter="setFilter" />
       <FilterButton :currentFilter="filter" filter="other" @set-filter="setFilter" />
     </div>
-    <EntryList :entries @remove-entry="removeEntry" />
+    <EntryList :entries="filteredEntries" @remove-entry="removeEntry" />
   </main>
 </template>
 
