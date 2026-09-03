@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	//"github.com/google/uuid"
-	//"github.com/hardiing/watched-seen-read/internal/auth"
 	"github.com/hardiing/watched-seen-read/internal/database"
 )
 
@@ -45,19 +43,6 @@ func (cfg *apiConfig) addRecordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/* 	token, err := auth.GetBearerToken(r.Header)
-	   	if err != nil {
-	   		msg := fmt.Sprintf("Error getting authentication header: %s", err)
-	   		respondWithError(w, 500, msg)
-	   		return
-	   	}
-	   	validatedUser, err := auth.ValidateJWT(token, cfg.secret)
-	   	if err != nil {
-	   		msg := fmt.Sprintf("Error validating JWT: %s", err)
-	   		respondWithError(w, 401, msg)
-	   		return
-	   	} */
-
 	query_params := database.CreateRecordParams{
 		RecordDate:  parsedDate,
 		RecordTitle: params.Record_Title,
@@ -88,10 +73,6 @@ func (cfg *apiConfig) getRecordsHandler(w http.ResponseWriter, r *http.Request) 
 
 	var allRecords []Record
 
-	//query := r.URL.Query()
-	//date := query.Get("record_date")
-	//sortType := query.Get("sort")
-
 	records, err := cfg.db.GetAllRecords(r.Context())
 	if err != nil {
 		msg := fmt.Sprintf("Error getting records: %s", err)
@@ -109,73 +90,7 @@ func (cfg *apiConfig) getRecordsHandler(w http.ResponseWriter, r *http.Request) 
 		allRecords = append(allRecords, convertRecord)
 	}
 
-	/* if sortType == "desc" {
-		sort.Slice(allRecords, func(i, j int) bool {
-			return allRecords[i].Record_Date.After(allRecords[j].CreatedAt)
-		})
-	} else {
-		sort.Slice(allChirps, func(i, j int) bool {
-			return allChirps[i].CreatedAt.Before(allChirps[j].CreatedAt)
-		})
-	} */
-
 	respondWithJSON(w, 200, allRecords)
-
-	/* if authorID != "" {
-		parsedUUID, err := uuid.Parse(authorID)
-		if err != nil {
-			msg := fmt.Sprintf("Error parsing UUID: %s", err)
-			respondWithError(w, 400, msg)
-			return
-		}
-		chirps, err := cfg.db.GetChirpsByAuthorID(r.Context(), parsedUUID)
-		if err != nil {
-			msg := fmt.Sprintf("Error getting all chirps for author: %s", err)
-			respondWithError(w, 500, msg)
-			return
-		}
-
-		for _, chirp := range chirps {
-			convertChirp := Chirp{
-				ID:        chirp.ID,
-				CreatedAt: chirp.CreatedAt,
-				UpdatedAt: chirp.UpdatedAt,
-				Body:      chirp.Body,
-				User_ID:   chirp.UserID,
-			}
-			allChirps = append(allChirps, convertChirp)
-		}
-	} else {
-		chirps, err := cfg.db.GetAllChirps(r.Context())
-		if err != nil {
-			msg := fmt.Sprintf("Error getting all chirps: %s", err)
-			respondWithError(w, 500, msg)
-			return
-		}
-
-		for _, chirp := range chirps {
-			convertChirp := Chirp{
-				ID:        chirp.ID,
-				CreatedAt: chirp.CreatedAt,
-				UpdatedAt: chirp.UpdatedAt,
-				Body:      chirp.Body,
-				User_ID:   chirp.UserID,
-			}
-			allChirps = append(allChirps, convertChirp)
-		}
-	}
-
-	if sortType == "desc" {
-		sort.Slice(allChirps, func(i, j int) bool {
-			return allChirps[i].CreatedAt.After(allChirps[j].CreatedAt)
-		})
-	} else {
-		sort.Slice(allChirps, func(i, j int) bool {
-			return allChirps[i].CreatedAt.Before(allChirps[j].CreatedAt)
-		})
-	}
-
-	respondWithJSON(w, 200, allChirps) */
 }
 
 func (cfg *apiConfig) deleteRecordHandler(w http.ResponseWriter, r *http.Request) {
