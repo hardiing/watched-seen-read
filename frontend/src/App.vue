@@ -13,7 +13,7 @@ const filter = ref<EntryFilter>("all");
 const fetchEntries = async () => {
   try {
     const response = await axios.get<Entry[]>(
-      'http://localhost:8080/api/records'
+      '/api/records'
     )
 
     entries.value = response.data
@@ -25,7 +25,7 @@ const fetchEntries = async () => {
 const addEntry = async (entry: NewEntry) => {
   try {
     await axios.post(
-      'http://localhost:8080/api/records',
+      '/api/records',
       entry
     )
 
@@ -38,7 +38,7 @@ const addEntry = async (entry: NewEntry) => {
 const removeEntry = async (id: number) => {
   try {
     await axios.delete(
-      'http://localhost:8080/api/records/' + id,
+      '/api/records/' + id,
     )
 
     await fetchEntries()

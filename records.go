@@ -71,7 +71,7 @@ func (cfg *apiConfig) getRecordsHandler(w http.ResponseWriter, r *http.Request) 
 		Record_Type  string `json:"record_type"`
 	}
 
-	var allRecords []Record
+	allRecords := make([]Record, 0)
 
 	records, err := cfg.db.GetAllRecords(r.Context())
 	if err != nil {
