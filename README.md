@@ -4,10 +4,10 @@ Inspired by Steven Soderbergh's yearly Seen, Read blog post, I set out to create
 
 ## Technologies Used
 
-Go
-Vue
-TypeScript
-PostgreSQL
+Go\
+Vue\
+TypeScript\
+PostgreSQL\
 
 ## How It Works
 
@@ -20,10 +20,10 @@ the list down to a specific entry type.
 ### Prerequisites
 
 Make sure you have the following installed:
-Go
-Node.js
-npm
-Git
+Go\
+Node.js\
+npm\
+Git\
 
 You can verify your installations with:
 
@@ -68,3 +68,36 @@ The API will typically be available at:
 ```
 http://localhost:8080
 ```
+
+### Frontend Setup
+
+Install the Vue dependencies:
+
+```
+cd frontend
+npm install
+```
+
+Start the Vue development server:
+
+```
+npm run dev
+```
+
+The frontend will typically be available at:
+
+```
+http://localhost:5173
+```
+
+### Database Setup
+
+The backend expects a PostgreSQL connection string in the DB_URL environment variable.
+
+Create a .env file in the project root and add the following:
+
+```
+DB_URL=postgres://username:password@localhost:5432/watched_seen_read
+```
+
+DB_URL is required for the application to connect to PostgreSQL.
