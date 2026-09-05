@@ -2,12 +2,14 @@
 
 Inspired by Steven Soderbergh's yearly Seen, Read blog post, I set out to create a small web app I can use to track my own list for the year.
 
+![Project Screenshot](app_example.png)
+
 ## Technologies Used
 
 Go\
 Vue\
 TypeScript\
-PostgreSQL\
+PostgreSQL
 
 ## How It Works
 
@@ -23,7 +25,7 @@ Make sure you have the following installed:
 Go\
 Node.js\
 npm\
-Git\
+Git
 
 You can verify your installations with:
 
