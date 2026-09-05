@@ -29,18 +29,23 @@ type apiConfig struct {
 var frontendAssets embed.FS
 
 func main() {
-	godotenv.Load()
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found; using environment variables")
+	}
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
 	secret := os.Getenv("JWT_SECRET")
 	apiKey := os.Getenv("POLKA_KEY")
+	port := os.Getenv("PORT")
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		log.Fatalf("Error opening database: %s\n", err)
 	}
 	dbQueries := database.New(db)
 	const filepathRoot = "."
-	const port = "8080"
+	if port == "" {
+		port = "8080"
+	}
 
 	cfg := apiConfig{
 		fileserverHits: atomic.Int32{},
@@ -69,10 +74,8 @@ func main() {
 	mux.HandleFunc("GET /api/records", cfg.getRecordsHandler)
 	mux.HandleFunc("DELETE /api/records/{recordID}", cfg.deleteRecordHandler)
 
-	corsHandler := enableCORS(mux)
-
 	srv := &http.Server{
-		Handler: corsHandler,
+		Handler: mux,
 		Addr:    ":" + port,
 	}
 	log.Printf("Serving files from %s on port %s\n", filepathRoot, port)
@@ -93,21 +96,6 @@ func (cfg *apiConfig) metricsHandler(w http.ResponseWriter, r *http.Request) {
 func (cfg *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cfg.fileserverHits.Add(1)
-		next.ServeHTTP(w, r)
-	})
-}
-
-func enableCORS(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-
 		next.ServeHTTP(w, r)
 	})
 }

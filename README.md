@@ -1,6 +1,11 @@
 # Watched Seen Read
 
-Inspired by Steven Soderbergh's yearly Seen, Read blog post, I set out to create a small web app I can use to track my own list for the year.
+## Motivation
+
+Inspired by Steven Soderbergh's yearly Seen, Read blog post, I set out to create a small web app I can use to track my own list for the year. I've traditionally just
+tracked this in a Google Sheet, but thought it would be fun to turn it into a web app so multiple years can be stored and entries can be filtered for easier viewing.
+
+## Usage
 
 ![Project Screenshot](app_example.png)
 
@@ -17,7 +22,7 @@ Using the app is pretty straight forward, you use the form to enter what you've 
 then hit Submit. The data gets saved to the PostgreSQL database, and the Entry List fetches table and displays the updated data. There are filter buttons to filter
 the list down to a specific entry type.
 
-## Installation and Setup
+## Quick Start
 
 ### Prerequisites
 
@@ -103,3 +108,7 @@ DB_URL=postgres://username:password@localhost:5432/watched_seen_read
 ```
 
 DB_URL is required for the application to connect to PostgreSQL.
+
+### Contributing
+
+To be finalized.
