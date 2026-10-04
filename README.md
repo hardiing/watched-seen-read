@@ -24,6 +24,41 @@ the list down to a specific entry type.
 
 ## Quick Start
 
+### Clone the Repository
+
+```
+git clone https://github.com/hardiing/watched-seen-read.git
+cd watched-seen-read
+```
+
+### Database Setup
+
+The backend expects a PostgreSQL connection string in the DB_URL environment variable.
+
+Create a .env file in the project root and add the following:
+
+```
+DB_URL=postgres://username:password@localhost:5432/watched_seen_read
+```
+
+DB_URL is required for the application to connect to PostgreSQL.
+
+### Running The App
+
+If you are just using the application, you can just use docker compose commands while running [Docker Desktop](https://www.docker.com/products/docker-desktop/) (if on Windows/Mac) or [Docker Engine](https://docs.docker.com/engine/) (if on Linux).
+
+Up:
+
+```
+docker compose up
+```
+
+Down:
+
+```
+docker compose down
+```
+
 ### Prerequisites
 
 Make sure you have the following installed:
@@ -39,13 +74,6 @@ go version
 node --version
 npm --version
 git --version
-```
-
-### Clone the Repository
-
-```
-git clone https://github.com/hardiing/watched-seen-read.git
-cd watched-seen-read
 ```
 
 ### Backend Setup
@@ -96,19 +124,3 @@ The frontend will typically be available at:
 ```
 http://localhost:5173
 ```
-
-### Database Setup
-
-The backend expects a PostgreSQL connection string in the DB_URL environment variable.
-
-Create a .env file in the project root and add the following:
-
-```
-DB_URL=postgres://username:password@localhost:5432/watched_seen_read
-```
-
-DB_URL is required for the application to connect to PostgreSQL.
-
-### Contributing
-
-To be finalized.
