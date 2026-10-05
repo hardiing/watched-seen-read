@@ -41,7 +41,7 @@ Up:
 docker compose up --build
 ```
 
-Once the containers are running, open http://localhost:8080\
+Once the containers are running, open http://localhost:8080
 
 Down:
 
